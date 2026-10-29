@@ -35,9 +35,9 @@ export default buildConfig({
   ],
   applications: [
     {
-      key: 'AltudoSdk',
+      key: 'optimizely-velocity',
       entryPoint: 'home',
-      displayName: 'AltudoSdk',
+      displayName: 'optimizely-velocity',
       type: 'website',
       isDefault: true,
       useApplicationSpecificAssets: false,

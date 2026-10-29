@@ -1,4 +1,4 @@
-# AltudoSdk
+# optimizely-velocity
 
 A Next.js frontend for Optimizely CMS (SaaS). Content types are defined in code, synced to the CMS with the Optimizely CLI, and loaded from Optimizely Graph by URL.
 
@@ -45,7 +45,7 @@ Fill in `.env`. The values come from the CMS admin site.
 
 ### 3. Give the CLI API key permission to create content
 
-`npm run config:push` creates the AltudoSdk application and a Home start page. The CMS client needs **Create** on the content root.
+`npm run config:push` creates the optimizely-velocity application and a Home start page. The CMS client needs **Create** on the content root.
 
 1. Open **Settings → Set Access Rights**.
 2. Select the root.
@@ -59,7 +59,7 @@ Fill in `.env`. The values come from the CMS admin site.
 npm run config:push
 ```
 
-This reads `optimizely.config.mjs` and every `components/**/model.ts` file, then uploads content types, display templates, the `en` locale, and the `AltudoSdk` website application. The application host in that file is `localhost:3000`.
+This reads `optimizely.config.mjs` and every `components/**/model.ts` file, then uploads content types, display templates, the `en` locale, and the `optimizely-velocity` website application. The application host in that file is `localhost:3000`.
 
 The command also tries to create a content item named `home` (`StartPage`) and use it as the application entry point. If that step is forbidden, the types may already be uploaded. Fix the access rights above and run the command again.
 
@@ -90,7 +90,7 @@ CMS preview opens `/preview` with the content key, version, locale, and preview 
 | `npm run dev` | HTTPS dev server on port 3000 |
 | `npm run build` | Production build |
 | `npm start` | Run the production build |
-| `npm run config:push` | Upload models and the AltudoSdk application to the CMS |
+| `npm run config:push` | Upload models and the optimizely-velocity application to the CMS |
 | `npm run deploy` | Deploy the frontend with `optimizely-cms-cli deploy` |
 
 ## How a content type is organized

@@ -1,4 +1,4 @@
-# AltudoSdk-template
+# optimizely-velocity
 
 ## 0.1.3-beta.0
 

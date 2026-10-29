@@ -233,7 +233,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
               <div className='p-8 text-center'>
                 <Search size={48} className='mx-auto text-gray-300 mb-4' />
                 <h3 className='text-lg font-semibold text-gray-900 mb-2'>
-                  Search AltudoSdk
+                  Search optimizely-velocity
                 </h3>
                 <p className='text-gray-500'>Find pages and content across the site</p>
               </div>

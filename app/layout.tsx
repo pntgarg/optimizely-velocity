@@ -21,7 +21,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'AltudoSdk',
+  title: 'optimizely-velocity',
   description: 'Set it. Sweat it. Send it.',
   icons: {
     icon: '/favicon.png',

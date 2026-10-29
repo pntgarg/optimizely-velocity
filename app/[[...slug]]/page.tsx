@@ -30,13 +30,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (content === null) {
     return {
-      title: 'AltudoSdk — Page Not Found',
+      title: 'optimizely-velocity — Page Not Found',
     };
   }
 
   // TODO: Add SEO fields and render as metadata
   return {
-    title: `AltudoSdk — ${content._metadata.displayName}`,
+    title: `optimizely-velocity — ${content._metadata.displayName}`,
     description: '',
   };
 }

@@ -128,7 +128,7 @@ export const Footer = async ({
           <div className='col-span-1 md:col-span-1'>
             <div className='space-y-2'>
               <p className='font-bold text-foreground uppercase text-xs tracking-wider mb-2'>
-                AltudoSdk
+                optimizely-velocity
               </p>
               <p>100 Market St</p>
               <p>San Francisco, CA 94103, USA</p>

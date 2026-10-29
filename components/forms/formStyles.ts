@@ -1,6 +1,6 @@
 /**
  * Shared field styling, so inputs, textareas and selections stay in step with
- * each other and with the rest of the AltudoSdk palette (key1 accent, foreground
+ * each other and with the rest of the optimizely-velocity palette (key1 accent, foreground
  * scale).
  */
 

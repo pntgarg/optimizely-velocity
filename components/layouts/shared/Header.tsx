@@ -1,13 +1,12 @@
 import { HeaderClient } from './Header.client';
-import { getMobileNavigationItems, getNavigationItems, type NavigationItem } from '../../../lib/navigation';
 import { getAllSearchableContent } from '../../../lib/search';
 import {
   getHeaderData,
-  type HeaderLayout,
   type LayoutLink,
   type MegaMenuGroupData,
   type MenuNavigationData,
 } from '../../../lib/appLayout';
+import type { NavigationItem } from '../../../lib/navigation';
 
 const linkUrl = (link: LayoutLink | null | undefined) => link?.url?.default ?? '#';
 
@@ -35,33 +34,24 @@ const toNavigationItem = (item: MegaMenuGroupData, index: number): NavigationIte
   items: (item.MegaMenuContentArea ?? []).map(toNavigationColumn),
 });
 
-export const Header = async ({
-  layout,
-  locale = 'en',
-}: {
-  layout?: HeaderLayout | null;
-  locale?: string;
-} = {}) => {
-  const headerLayout = layout === undefined ? await getHeaderData(locale) : layout;
+export const Header = async ({ locale = 'en' }: { locale?: string } = {}) => {
+  const header = await getHeaderData(locale);
   const searchableContent = await getAllSearchableContent();
-  const menuItems = (headerLayout?.mainMenu ?? []).map(toNavigationItem);
-  const navigationItems = menuItems.length > 0 ? menuItems : await getNavigationItems();
-  const mobileNavItems = menuItems.length > 0 ? menuItems : await getMobileNavigationItems();
-  const serviceButtons = (headerLayout?.serviceButtons ?? [])
-    .filter(button => button.ButtonText)
+  const navigationItems = (header?.mainMenu ?? []).map(toNavigationItem);
+  const serviceButtons = (header?.serviceButtons ?? [])
+    .filter(button => button._metadata?.displayName)
     .map(button => ({
-      key: button._metadata?.key ?? button.ButtonText ?? 'button',
-      text: button.ButtonText ?? '',
-      href: button.ButtonUrl?.default ?? '#',
-      variant: button.ButtonType,
+      key: button._metadata?.key ?? button._metadata?.displayName ?? 'button',
+      text: button._metadata?.displayName ?? '',
+      href: button._metadata?.url?.default ?? '#',
     }));
 
   return (
     <HeaderClient
       navigationItems={navigationItems}
-      mobileNavItems={mobileNavItems}
+      mobileNavItems={navigationItems}
       searchableContent={searchableContent}
-      logoUrl={headerLayout?.layoutsitelogo?.url?.default}
+      logoUrl={header?.layoutsitelogo?.url?.default}
       serviceButtons={serviceButtons}
     />
   );

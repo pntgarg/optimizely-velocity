@@ -5,7 +5,6 @@ import { notFound } from 'next/navigation';
 import { cache } from 'react';
 import { Footer } from '../../components/layouts/shared/Footer';
 import { Header } from '../../components/layouts/shared/Header';
-import { getFooterData, getHeaderData } from '../../lib/appLayout';
 
 type Props = {
   params: Promise<{ slug?: string[] }>;
@@ -58,18 +57,13 @@ export async function Page({ params }: Props) {
     locale,
   });
 
-  const [header, footer] = await Promise.all([
-    getHeaderData(locale),
-    getFooterData(locale),
-  ]);
-
   return (
     <>
-      <Header layout={header} locale={locale} />
+      <Header locale={locale} />
       <main className='pt-32'>
         <pre>{JSON.stringify(content, null, 2)}</pre>
       </main>
-      <Footer layout={footer} locale={locale} />
+      <Footer locale={locale} />
     </>
   );
 }

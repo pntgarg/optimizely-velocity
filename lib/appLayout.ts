@@ -1,5 +1,11 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { getClient } from '@optimizely/cms-sdk';
 import { cache } from 'react';
+
+const graphQueryFolder = join(process.cwd(), 'components/layouts/graphQuery');
+const headerQuery = readFileSync(join(graphQueryFolder, 'getHeaderData.graphql'), 'utf8');
+const footerQuery = readFileSync(join(graphQueryFolder, 'getFooterData.graphql'), 'utf8');
 
 type ContentUrl = {
   default?: string | null;
@@ -37,11 +43,8 @@ export type ServiceButtonData = {
   _metadata?: {
     key?: string | null;
     displayName?: string | null;
+    url?: ContentUrl;
   } | null;
-  ButtonText?: string | null;
-  ButtonUrl?: ContentUrl;
-  ButtonType?: string | null;
-  isrightarrowbutton?: boolean | null;
 };
 
 export type HeaderLayout = {
@@ -75,146 +78,6 @@ export type FooterLayout = {
   } | null;
 };
 
-const LAYOUT_FILTER = `
-  where: {
-    _or: [
-      { appIdentifiers: { exist: false } }
-      {
-        _and: [
-          { appIdentifiers: { exist: true } }
-          { appIdentifiers: { eq: $domain } }
-        ]
-      }
-    ]
-  }
-  locale: $locale
-`;
-
-const ICONTENT_DATA = `
-fragment IContentData on _IContent {
-  _metadata {
-    key
-    displayName
-    types
-    url {
-      default
-    }
-  }
-}
-`;
-
-const LINK_ITEM_DATA = `
-fragment LinkItemData on Link {
-  title
-  text
-  target
-  url {
-    default
-    base
-    hierarchical
-  }
-}
-`;
-
-const MENU_NAVIGATION_BLOCK_DATA = `
-fragment MenuNavigationBlockData on MenuNavigationBlock {
-  MenuNavigationHeading
-  NavigationLinks {
-    ...LinkItemData
-  }
-}
-`;
-
-const MEGA_MENU_GROUP_BLOCK_DATA = `
-fragment MegaMenuGroupBlockData on MegaMenuGroupBlock {
-  MenuMenuHeading
-  MegaMenuUrl {
-    default
-    base
-    hierarchical
-  }
-  MegaMenuContentArea {
-    ...IContentData
-    ...MenuNavigationBlockData
-  }
-}
-`;
-
-const BUTTON_BLOCK_DATA = `
-fragment ButtonBlockData on ButtonBlock {
-  ButtonText
-  ButtonUrl {
-    default
-    base
-    hierarchical
-  }
-  ButtonType
-  isrightarrowbutton
-}
-`;
-
-const FOOTER_FRAGMENTS = `${ICONTENT_DATA}${LINK_ITEM_DATA}${MENU_NAVIGATION_BLOCK_DATA}`;
-const HEADER_FRAGMENTS = `${FOOTER_FRAGMENTS}${MEGA_MENU_GROUP_BLOCK_DATA}${BUTTON_BLOCK_DATA}`;
-
-const GET_HEADER_DATA = `
-query getHeaderData($domain: String, $locale: [Locales!]) {
-  appLayout: LayoutSettingsBlock(
-    ${LAYOUT_FILTER}
-  ) {
-    items {
-      _metadata {
-        key
-        displayName
-      }
-      appIdentifiers
-      layoutsitelogo {
-        url {
-          default
-        }
-      }
-      mainMenu {
-        ...IContentData
-        ...MegaMenuGroupBlockData
-      }
-      serviceButtons {
-        ...IContentData
-        ...ButtonBlockData
-      }
-    }
-  }
-}
-${HEADER_FRAGMENTS}
-`;
-
-const GET_FOOTER_DATA = `
-query getFooterData($domain: String, $locale: [Locales!]) {
-  appLayout: LayoutSettingsBlock(
-    ${LAYOUT_FILTER}
-  ) {
-    items {
-      _metadata {
-        key
-        displayName
-      }
-      appIdentifiers
-      copyright
-      footerMenus {
-        ...IContentData
-        ...MenuNavigationBlockData
-      }
-      legalLinks {
-        ...LinkItemData
-      }
-      contactInfoHeading
-      contactInfo {
-        json
-      }
-    }
-  }
-}
-${FOOTER_FRAGMENTS}
-`;
-
 export function getAppDomain() {
   const host = process.env.APPLICATION_HOST ?? '';
 
@@ -225,21 +88,7 @@ export function getAppDomain() {
   }
 }
 
-function firstLayout<T extends { appIdentifiers?: string | null }>(
-  items: T[] | null | undefined,
-  domain: string,
-) {
-  if (!items?.length) {
-    return null;
-  }
-
-  return items.find(item => item.appIdentifiers === domain) ?? items[0];
-}
-
-async function queryLayout<T extends { appIdentifiers?: string | null }>(
-  query: string,
-  locale: string,
-) {
+async function queryLayout<T>(query: string, locale: string) {
   const domain = getAppDomain();
   const data = await getClient().request(query, {
     domain,
@@ -247,13 +96,13 @@ async function queryLayout<T extends { appIdentifiers?: string | null }>(
   });
   const items = data?.appLayout?.items as T[] | undefined;
 
-  return firstLayout(items, domain);
+  return items?.[0] ?? null;
 }
 
 export const getHeaderData = cache(async (locale = 'en') => {
-  return queryLayout<HeaderLayout>(GET_HEADER_DATA, locale);
+  return queryLayout<HeaderLayout>(headerQuery, locale);
 });
 
 export const getFooterData = cache(async (locale = 'en') => {
-  return queryLayout<FooterLayout>(GET_FOOTER_DATA, locale);
+  return queryLayout<FooterLayout>(footerQuery, locale);
 });
